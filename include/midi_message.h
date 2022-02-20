@@ -1,6 +1,10 @@
 #pragma once
 #include "rtmidi/RtMidi.h"
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <algorithm>
+#include <unistd.h>
 
 #define PROG_CHG 0b11000000
 #define CTRL_CHG 0b10110000
@@ -22,10 +26,16 @@ class MidiMessage
 
     void set_volume(uint8_t vol, uint8_t channel);
 
+    void update_notes(std::vector<uint8_t> note_input);
+
     private:
     
     RtMidiOut &midi_dev;
-    std::vector<uint8_t> message;
+    std::vector<uint8_t> message;    
+    std::thread *midi_bg;
 
+    protected:
+    std::mutex midi_mut;
+    std::vector<uint8_t> note_input;
 
 };
