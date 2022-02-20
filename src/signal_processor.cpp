@@ -26,6 +26,7 @@ int SignalProcessor::process_samples(jack_nframes_t nframes, void* arg)
     {
         float mag = sqrt( (out[i][0] * out[i][0]) + (out[i][1] * out[i][1]) );
         fourier_out.push_back(std::pair(i, mag));
+        // printf("%d, %f, %f\n", i, out[i][0], out[i][1]);
     }
     // Get the most common frequencies over a certain magnitude cutoff
     std::vector<float> common_freqs = get_common_freqs(fourier_out, nframes, jack_get_sample_rate(client), FOURIER_CUTOFF);
@@ -78,7 +79,7 @@ std::vector<uint8_t> SignalProcessor::get_midi_keys(std::vector<float> frequenci
     // 12 * log2( freq / 440 ) + 69
     // the + 49 gives the piano number, MIDI is offset by 20
     for(int i = 0; i < frequencies.size(); i++)
-        output.push_back(floor(12 * log2(frequencies[i]/440.0) + 49 + 20));
+        output.push_back((uint8_t) round(12 * log2(frequencies[i]/440.0) + 49 + 20));
 
     return output;
 }
